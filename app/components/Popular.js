@@ -1,5 +1,6 @@
  import React from 'react'
  import PropTypes from 'prop-types'
+ import { fetchPopularRepos } from '../utils/api'
 
  function LanguageNav ({ selected, onUpdateLanguage}) {
      const languages = ['All', 'Javascript', 'Ruby', 'Java', 'CSS', 'Python'];
@@ -29,25 +30,57 @@
         super(props)
 
         this.state = {
-            selectedLanguage: 'All'
+            selectedLanguage: 'All',
+            repos: null,
+            error: null
         }
 
         this.updateLanguage = this.updateLanguage.bind(this)
-    }
-    updateLanguage (selectedLanguage) {
-        this.setState({
-            selectedLanguage: selectedLanguage
-        })
+        this.isLoading = this.isLoading.bind(this)
     }
 
-    render() {
-        const { selectedLanguage } = this.state
+     componentDidMount() {
+         this.updateLanguage(this.state.selectedLanguage)
+     }
+
+    updateLanguage (selectedLanguage) {
+        this.setState({
+            selectedLanguage: selectedLanguage,
+            repos: null,
+            error: null
+        })
+
+        fetchPopularRepos(selectedLanguage)
+            .then((repos) => this.setState({
+                repos: repos,
+                error: null
+            })).catch((error) => {
+                console.warn('Error fetching repos:', error)
+                this.setState({
+                    repos: null,
+                    error: error
+                })
+            })
+    }
+
+    isLoading() {
+        return this.state.repos == null && this.state.error == null
+    }
+
+     render() {
+        const { selectedLanguage, repos, error } = this.state
         return (
             <React.Fragment>
                 <LanguageNav
                     selected={ selectedLanguage }
                     onUpdateLanguage={ this.updateLanguage }
                 />
+
+                { this.isLoading() && <p>LOADING</p> }
+
+                { error && <p>{error.message}</p> }
+
+                { repos && <pre>{JSON.stringify(repos, null, 2)}</pre>}
             </React.Fragment>
         )
     }
