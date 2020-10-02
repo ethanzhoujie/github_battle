@@ -10,7 +10,7 @@
                  <li key={language}>
                      <button
                          className='btn-clear nav-link'
-                         style={language === selected ? {color: 'rgb(187, 46, 31)'} : null}
+                         style={language === selected ? {color: 'rgb(187,46,31)'} : null}
                          onClick={() => onUpdateLanguage(language)}>
                          {language}
                      </button>
@@ -31,7 +31,7 @@
 
         this.state = {
             selectedLanguage: 'All',
-            repos: null,
+            repos: {},
             error: null
         }
 
@@ -46,25 +46,32 @@
     updateLanguage (selectedLanguage) {
         this.setState({
             selectedLanguage: selectedLanguage,
-            repos: null,
             error: null
         })
 
-        fetchPopularRepos(selectedLanguage)
-            .then((repos) => this.setState({
-                repos: repos,
-                error: null
-            })).catch((error) => {
-                console.warn('Error fetching repos:', error)
-                this.setState({
-                    repos: null,
-                    error: error
+        if (!this.state.repos[selectedLanguage]) {
+            fetchPopularRepos(selectedLanguage)
+                .then((data) => {
+                    this.setState(({ repos }) => ({
+                        repos: {
+                            ...repos,
+                            [selectedLanguage]: data
+                        }
+                    }))
                 })
-            })
+                .catch((error) => {
+                    console.warn('Error fetching repos: ', error)
+                    this.setState({
+                        error: error
+                    })
+                })
+        }
     }
 
     isLoading() {
-        return this.state.repos == null && this.state.error == null
+        const { selectedLanguage, repos, error } = this.state
+
+        return !repos[selectedLanguage] && error === null
     }
 
      render() {
@@ -80,7 +87,7 @@
 
                 { error && <p>{error.message}</p> }
 
-                { repos && <pre>{JSON.stringify(repos, null, 2)}</pre>}
+                { repos[selectedLanguage] && <pre>{JSON.stringify(repos[selectedLanguage], null, 2)}</pre>}
             </React.Fragment>
         )
     }
