@@ -1,6 +1,6 @@
 import React from 'react'
 
-const { Provider, Consumer } = React.createContext();
+const { Provider, Consumer } = React.createContext('light');
 
 export const ThemeProvider = Provider
-export const themeConsumer = Consumer
+export const ThemeConsumer = Consumer
