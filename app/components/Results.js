@@ -4,6 +4,8 @@ import { FaCompass, FaBriefcase, FaUsers, FaUserFriends, FaCode, FaUser } from "
 import Card from "./Card"
 import Loading from "./Loading"
 import Tooltip from "./Tooltip"
+import queryString from 'query-string'
+import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
 function ProfileList({ profile }) {
@@ -54,7 +56,7 @@ export default class Results extends React.Component {
     }
 
     componentDidMount() {
-        const { playerOne, playerTwo } = this.props
+        const { playerOne, playerTwo } = queryString.parse(this.props.location.search)
         battle([playerOne, playerTwo]).then((players) => {
             this.setState({
                 winner: players[1],
@@ -107,12 +109,12 @@ export default class Results extends React.Component {
                         </Card>
                 </div>
 
-                <button
-                    onClick={this.props.onReset}
+                <Link
+                    to='/Battle'
                     className='btn dark-btn btn-space'
                 >
                     Reset
-                </button>
+                </Link>
             </ React.Fragment>
         )
     }
