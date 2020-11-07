@@ -7,7 +7,7 @@
  import Tooltip from "./Tooltip"
 
  function LanguageNav ({ selected, onUpdateLanguage}) {
-     const languages = ['All', 'Javascript', 'Ruby', 'Java', 'CSS', 'Python'];
+     const languages = ['All', 'Javascript', 'Typescript', 'Java', 'Go', 'Python'];
      return (
          <ul className='flex-center'>
              {languages.map((language) => (
